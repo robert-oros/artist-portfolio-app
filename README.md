@@ -9,6 +9,7 @@ This is a web application for managing a digital artist's portfolio. The web app
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
    - [Running the Application](#running-the-application)
+- [API Overview](#api-overview)
 
 ## Technologies Used
 - Frontend: React
@@ -58,4 +59,14 @@ The repository is divided into two main folders:
     npm start
     ```
 
-The web application will be available at `http://localhost:3000`, and the API will be running at `http://localhost:3000/api`
+The web application will be available at `http://localhost:3000`, and the API will be running at `http://localhost:3000/portfolio`
+
+## API Overview
+The backend API provides the following endpoints for managing portfolio items:
+- `GET /api/portfolio`: Retrieve all portfolio items
+- `GET /api/portfolio/:id`: Retrieve a specific portfolio item by ID
+- `POST /api/portfolio`: Create a new portfolio item
+- `PATCH /api/portfolio/:id`: Update an existing portfolio item
+- `DELETE /api/portfolio/:id`: Delete a portfolio item
+
+For detailed information on request/response formats and usage examples, please refer to the API Documentation in the API folder.

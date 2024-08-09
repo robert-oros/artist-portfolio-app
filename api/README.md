@@ -7,6 +7,7 @@ This is the backend API for a digital artist's portfolio. The API provides CRUD 
     - [Installation](#installation)
 - [API Documentation](#api-documentation)
    - [Endpoints](#endpoints)
+   - [Error Handling](#error-handling)
 - [Technology Stack](#technology-stack)
 - [Development](#development)
    - [Running the Development Server](#running-the-development-server)
@@ -36,9 +37,6 @@ This is the backend API for a digital artist's portfolio. The API provides CRUD 
     ```
 
 ## API Documentation
-
-- **Port Information** - The API is running on port 8080 by default. You can change this in the `src/main.ts` file.
-
 
 ### Endpoints
 
@@ -85,6 +83,52 @@ This is the backend API for a digital artist's portfolio. The API provides CRUD 
 - Request Body: Partial portfolio item object with the fields to update.
 - Response: The updated portfolio item object.
 
+## Error Handling
+The API uses standard HTTP response codes to indicate the success or failure of an API request.
+
+The API uses the following HTTP status codes:
+- `200 OK`: The request was successful.
+- `201 Created`: The request was successful and a resource was created.
+- `400 Bad Request`: The request was invalid or cannot be served.
+- `404 Not Found`: The requested resource could not be found.
+- `500 Internal Server Error`: The server encountered an unexpected condition which prevented it from fulfilling the request.
+
+Examples:
+1. Successful GET request:
+    ```bash 
+    Status: 200 OK
+    ```
+2. Successful POST request:
+    ```bash 
+    Status: 201 Created
+    ```
+3. Invalid input for POST or PATCH request:
+    ```bash 
+    Status: 400 Bad Request
+    {
+      "message": "Unexpected token } in JSON at position 166",
+      "error": "Bad Request",
+      "statusCode": 400
+    }
+    ```
+4. Resource not found:
+    ```bash 
+    Status: 404 Not Found
+    {
+      "message": "Cannot GET /path",
+      "error": "Not Found",
+      "statusCode": 404
+    }
+    ```
+5. Server error:
+    ```bash 
+    Status: 500 Internal Server Error
+    {
+      "statusCode": 500,
+      "message": "Internal server error"
+    }
+    ```
+
 ## Technology Stack
 - Framework: NestJS
 - ORM: TypeORM
@@ -102,6 +146,7 @@ Alternatively, you can use:
 npm run start:dev
 ```
 ### Running the Production Server
+The API is running on port 3000 by default. You can change this in the `src/main.ts` file.
 ```bash
 make prod
 ```
