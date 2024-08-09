@@ -113,5 +113,9 @@ npm run start:prod
 
 ## Testing
 ```bash
+make test
+```
+or
+```bash
 npm run test
 ```
