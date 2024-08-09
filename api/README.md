@@ -1,6 +1,17 @@
 # Portfolio API
-## Introduction
 This is the backend API for a digital artist's portfolio. The API provides CRUD (Create, Read, Update, Delete) functionality for managing portfolio items.
+
+## Table of Contents
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+- [API Documentation](#api-documentation)
+   - [Endpoints](#endpoints)
+- [Technology Stack](#technology-stack)
+- [Development](#development)
+   - [Running the Development Server](#running-the-development-server)
+   - [Running the Production Server](#running-the-production-server)
+- [Testing](#testing)
 
 ## Getting Started
 ### Prerequisites
@@ -74,6 +85,11 @@ This is the backend API for a digital artist's portfolio. The API provides CRUD 
 - Request Body: Partial portfolio item object with the fields to update.
 - Response: The updated portfolio item object.
 
+## Technology Stack
+- Framework: NestJS
+- ORM: TypeORM
+- Database: SQLite
+
 ## Development
 ### Running the Development Server
 
@@ -93,4 +109,9 @@ or
 
 ```bash
 npm run start:prod
+```
+
+## Testing
+```bash
+npm run test
 ```
