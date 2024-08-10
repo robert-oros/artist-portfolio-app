@@ -14,8 +14,9 @@ const PortfolioList = () => {
     description: '',
     imageUrl: '',
     clientWebsiteUrl: '',
-    isVisible: true
+    isVisible: true,
   });
+  const [imageFile, setImageFile] = useState(null); // New state for image file
 
   useEffect(() => {
     fetchItems();
@@ -58,7 +59,26 @@ const PortfolioList = () => {
 
   const handleAddItem = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/portfolio', newItem);
+      let imagePath = newItem.imageUrl;
+
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        const uploadResponse = await axios.post('http://localhost:3000/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        imagePath = uploadResponse.data.filePath;
+      }
+
+      const response = await axios.post('http://localhost:3000/portfolio', {
+        ...newItem,
+        imageUrl: imagePath,
+      });
+
       setItems((prevItems) => [...prevItems, response.data]);
       setError(null);
       setOpenAddDialog(false);
@@ -67,8 +87,9 @@ const PortfolioList = () => {
         description: '',
         imageUrl: '',
         clientWebsiteUrl: '',
-        isVisible: true
+        isVisible: true,
       });
+      setImageFile(null);
     } catch (err) {
       console.error('Error adding portfolio item:', err);
       setError('Unable to add portfolio item. Please try again later.');
@@ -86,12 +107,18 @@ const PortfolioList = () => {
       description: '',
       imageUrl: '',
       clientWebsiteUrl: '',
-      isVisible: true
+      isVisible: true,
     });
+    setImageFile(null);
   };
 
   const handleNewItemChange = (e) => {
     setNewItem({ ...newItem, [e.target.name]: e.target.value });
+  };
+
+  const handleImageFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+    setNewItem({ ...newItem, imageUrl: '' }); // Clear imageUrl if a file is selected
   };
 
   if (loading) {
@@ -125,9 +152,9 @@ const PortfolioList = () => {
       )}
 
       <Zoom in={true}>
-        <Fab 
-          color="primary" 
-          aria-label="add" 
+        <Fab
+          color="primary"
+          aria-label="add"
           onClick={handleAddDialogOpen}
           sx={{
             position: 'fixed',
@@ -167,6 +194,26 @@ const PortfolioList = () => {
             onChange={handleNewItemChange}
             sx={{ mb: 2 }}
           />
+
+          {/* File input for image upload */}
+          <input
+            accept="image/*"
+            style={{ display: 'none' }}
+            id="upload-image-file"
+            type="file"
+            onChange={handleImageFileChange}
+          />
+          <label htmlFor="upload-image-file">
+            <Button
+              variant="contained"
+              component="span"
+              sx={{ mb: 2 }}
+              disabled={newItem.imageUrl !== ''} // Disable if imageUrl is filled
+            >
+              Upload Image
+            </Button>
+          </label>
+
           <TextField
             margin="dense"
             name="imageUrl"
@@ -177,7 +224,9 @@ const PortfolioList = () => {
             value={newItem.imageUrl}
             onChange={handleNewItemChange}
             sx={{ mb: 2 }}
+            disabled={imageFile !== null} // Disable if a file is selected
           />
+
           <TextField
             margin="dense"
             name="clientWebsiteUrl"
