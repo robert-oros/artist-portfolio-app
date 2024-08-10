@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom, Switch, FormControlLabel } from '@mui/material';
+import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom } from '@mui/material';
 import axios from 'axios';
 import PortfolioItem from './PortfolioItem';
 import AddIcon from '@mui/icons-material/Add';
@@ -9,7 +9,6 @@ const PortfolioList = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [showHidden, setShowHidden] = useState(false);
   const [newItem, setNewItem] = useState({
     title: '',
     description: '',
@@ -17,7 +16,6 @@ const PortfolioList = () => {
     clientWebsiteUrl: '',
     isVisible: true
   });
-  const [newImage, setNewImage] = useState(null);
 
   useEffect(() => {
     fetchItems();
@@ -60,15 +58,7 @@ const PortfolioList = () => {
 
   const handleAddItem = async () => {
     try {
-      const formData = new FormData();
-      Object.keys(newItem).forEach(key => formData.append(key, newItem[key]));
-      if (newImage) {
-        formData.append('image', newImage);
-      }
-
-      const response = await axios.post('http://localhost:3000/portfolio', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await axios.post('http://localhost:3000/portfolio', newItem);
       setItems((prevItems) => [...prevItems, response.data]);
       setError(null);
       setOpenAddDialog(false);
@@ -79,7 +69,6 @@ const PortfolioList = () => {
         clientWebsiteUrl: '',
         isVisible: true
       });
-      setNewImage(null);
     } catch (err) {
       console.error('Error adding portfolio item:', err);
       setError('Unable to add portfolio item. Please try again later.');
@@ -99,15 +88,10 @@ const PortfolioList = () => {
       clientWebsiteUrl: '',
       isVisible: true
     });
-    setNewImage(null);
   };
 
   const handleNewItemChange = (e) => {
-    if (e.target.name === 'image') {
-      setNewImage(e.target.files[0]);
-    } else {
-      setNewItem({ ...newItem, [e.target.name]: e.target.value });
-    }
+    setNewItem({ ...newItem, [e.target.name]: e.target.value });
   };
 
   if (loading) {
@@ -122,22 +106,15 @@ const PortfolioList = () => {
     return <Alert severity="error" variant="filled" sx={{ mt: 2 }}>{error}</Alert>;
   }
 
-  const visibleItems = showHidden ? items : items.filter(item => item.isVisible);
-
   return (
     <Box sx={{ py: 6, px: 2, position: 'relative' }}>
-      <FormControlLabel
-        control={<Switch checked={showHidden} onChange={(e) => setShowHidden(e.target.checked)} />}
-        label="Show hidden items"
-        sx={{ mb: 2 }}
-      />
-      {visibleItems.length === 0 ? (
+      {items.length === 0 ? (
         <Typography variant="h5" textAlign="center" color="text.secondary" mt={4}>
           No portfolio items found. Start by adding a new item!
         </Typography>
       ) : (
         <Grid container spacing={4}>
-          {visibleItems.map((item, index) => (
+          {items.map((item, index) => (
             <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
               <Grid item xs={12} sm={6} md={4}>
                 <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} />
@@ -200,13 +177,6 @@ const PortfolioList = () => {
             value={newItem.imageUrl}
             onChange={handleNewItemChange}
             sx={{ mb: 2 }}
-          />
-          <input
-            accept="image/*"
-            type="file"
-            name="image"
-            onChange={handleNewItemChange}
-            style={{ marginBottom: '16px' }}
           />
           <TextField
             margin="dense"

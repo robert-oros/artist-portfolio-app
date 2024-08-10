@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Switch, FormControlLabel } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LaunchIcon from '@mui/icons-material/Launch';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,7 +7,6 @@ import EditIcon from '@mui/icons-material/Edit';
 const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
   const [open, setOpen] = useState(false);
   const [editedItem, setEditedItem] = useState({ ...item });
-  const [newImage, setNewImage] = useState(null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -16,32 +15,20 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
   const handleClose = () => {
     setOpen(false);
     setEditedItem({ ...item });
-    setNewImage(null);
   };
 
   const handleChange = (e) => {
-    if (e.target.name === 'image') {
-      setNewImage(e.target.files[0]);
-    } else if (e.target.name === 'isVisible') {
-      setEditedItem({ ...editedItem, isVisible: e.target.checked });
-    } else {
-      setEditedItem({ ...editedItem, [e.target.name]: e.target.value });
-    }
+    setEditedItem({ ...editedItem, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = () => {
-    const formData = new FormData();
-    Object.keys(editedItem).forEach(key => formData.append(key, editedItem[key]));
-    if (newImage) {
-      formData.append('image', newImage);
-    }
-    handleEdit(formData);
+    handleEdit(editedItem);
     setOpen(false);
   };
 
   return (
     <Card 
-    elevation={3}
+    elevation={3}  // Add this line to create a default shadow
     sx={{
       height: '100%',
       display: 'flex',
@@ -49,10 +36,10 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
       borderRadius: 4,
       overflow: 'hidden',
       transition: 'all 0.3s ease-in-out',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  // Add this line for a custom shadow
       '&:hover': {
         transform: 'translateY(-8px)',
-        boxShadow: '0 12px 20px rgba(0,0,0,0.15)',
+        boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  // Increase shadow on hover
       },
       }}>
       <CardMedia
@@ -156,13 +143,6 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
             onChange={handleChange}
             sx={{ mb: 2 }}
           />
-          <input
-            accept="image/*"
-            type="file"
-            name="image"
-            onChange={handleChange}
-            style={{ marginBottom: '16px' }}
-          />
           <TextField
             margin="dense"
             name="clientWebsiteUrl"
@@ -172,17 +152,6 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
             variant="outlined"
             value={editedItem.clientWebsiteUrl}
             onChange={handleChange}
-            sx={{ mb: 2 }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={editedItem.isVisible}
-                onChange={handleChange}
-                name="isVisible"
-              />
-            }
-            label="Visible"
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
