@@ -28,7 +28,7 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
 
   return (
     <Card 
-    elevation={3}  // Add this line to create a default shadow
+    elevation={3}  
     sx={{
       height: '100%',
       display: 'flex',
@@ -36,10 +36,10 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
       borderRadius: 4,
       overflow: 'hidden',
       transition: 'all 0.3s ease-in-out',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  // Add this line for a custom shadow
+      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  
       '&:hover': {
         transform: 'translateY(-8px)',
-        boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  // Increase shadow on hover
+        boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  
       },
       }}>
       <CardMedia
