@@ -59,7 +59,7 @@ The repository is divided into two main folders:
     npm start
     ```
 
-The web application will be available at `http://localhost:3000`, and the API will be running at `http://localhost:3000/portfolio`
+The web application will be available at `http://localhost:8080`, and the API will be running at `http://localhost:3000/portfolio`
 
 ## API Overview
 The backend API provides the following endpoints for managing portfolio items:
