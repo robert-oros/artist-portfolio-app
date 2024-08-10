@@ -8,12 +8,11 @@ This is the frontend web application for managing a digital artist's portfolio.
     - [Installation](#installation)
 - [Application Structure](#application-structure)
    - [Components](#components)
-<!-- - [Features](#features) -->
 - [Technology Stack](#technology-stack)
 - [Development](#development)
    - [Running the Development Server](#running-the-development-server)
    - [Building for Production](#building-for-production)
-- [Testing](#testing)
+<!-- - [Testing](#testing) -->
 
 ## Getting Started
 ### Prerequisites
@@ -39,9 +38,10 @@ The web application is structured as follows:
 ```
 src/
 ├── components/
-│   ├── Header.js
-│   ├── PortfolioList.js
-│   └── PortfolioForm.js
+│   ├── Footer.js
+|   ├── Header.js
+│   ├── PortfolioItem.js
+│   └── PortfolioList.js
 ├── App.js
 └── index.js
 ```
@@ -79,11 +79,11 @@ npm run build
 
 This will create a `build` folder with the production-ready files.
 
-## Testing
+<!-- ## Testing
 
 To run the test suite:
 
 ```bash
 npm test
-```
+``` -->
 
