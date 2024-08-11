@@ -83,6 +83,12 @@ This is the backend API for a digital artist's portfolio. The API provides CRUD 
 - Request Body: Partial portfolio item object with the fields to update.
 - Response: The updated portfolio item object.
 
+File Upload
+`POST /upload`
+- Description: Uploads an image file.
+- Request: Multipart form data with the image file.
+- Response: The path of the uploaded file.
+
 ## Error Handling
 The API uses standard HTTP response codes to indicate the success or failure of an API request.
 

@@ -3,6 +3,7 @@
 This is a web application for managing a digital artist's portfolio. The web application provides a user-friendly interface for the artist to showcase their work, while the API handles the backend functionality for managing the portfolio items.
 
 ## Table of Contents
+- [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -10,6 +11,14 @@ This is a web application for managing a digital artist's portfolio. The web app
    - [Installation](#installation)
    - [Running the Application](#running-the-application)
 - [API Overview](#api-overview)
+
+## Features
+1. Portfolio Item Management
+    - Create, read, update, and delete portfolio items
+    - Each item includes: title, description, image URL, client website URL, and visibility status
+
+2. File Upload
+    - Support for image uploads
 
 ## Technologies Used
 - Frontend: React
@@ -68,5 +77,8 @@ The backend API provides the following endpoints for managing portfolio items:
 - `POST /api/portfolio`: Create a new portfolio item
 - `PATCH /api/portfolio/:id`: Update an existing portfolio item
 - `DELETE /api/portfolio/:id`: Delete a portfolio item
+
+File Upload
+- `POST /upload`: Upload an image file
 
 For detailed information on request/response formats and usage examples, please refer to the API Documentation in the API folder.
