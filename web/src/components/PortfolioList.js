@@ -66,7 +66,7 @@ const PortfolioList = () => {
   const handleAddItem = async () => {
     try {
       let imagePath = newItem.imageUrl;
-
+      
       if (imageFile) {
         const formData = new FormData();
         formData.append('image', imageFile);
@@ -75,10 +75,11 @@ const PortfolioList = () => {
         });
         imagePath = uploadResponse.data;
       }
-
+      
+      console.log(API_BASE_URL+imagePath)
       const response = await axios.post(`${API_BASE_URL}/portfolio`, {
         ...newItem,
-        imageUrl: `${API_BASE_URL}/${imagePath}`,
+        imageUrl: API_BASE_URL + "/" + imagePath.path,
       });
 
       setItems((prevItems) => [...prevItems, response.data]);
