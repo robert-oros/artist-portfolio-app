@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom } from '@mui/material';
+import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, Tooltip, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom } from '@mui/material';
 import axios from 'axios';
 import PortfolioItem from './PortfolioItem';
 import AddIcon from '@mui/icons-material/Add';
@@ -137,14 +137,16 @@ const PortfolioList = () => {
       )}
 
       <Zoom in={true}>
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={() => setOpenAddDialog(true)}
-          sx={{ position: 'fixed', bottom: 32, right: 32 }}
-        >
-          <AddIcon />
-        </Fab>
+        <Tooltip title="Add Item" arrow>
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={() => setOpenAddDialog(true)}
+            sx={{ position: 'fixed', bottom: 37, right: 37 }}
+          >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
       </Zoom>
 
       <Dialog open={openAddDialog} onClose={resetForm} fullWidth maxWidth="sm">
