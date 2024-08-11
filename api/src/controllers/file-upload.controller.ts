@@ -1,5 +1,5 @@
 // src/controllers/file-upload.controller.ts
-import { Controller, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -18,9 +18,22 @@ export class FileUploadController {
           callback(null, filename);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        // Check the MIME type of the file
+        if (file.mimetype.startsWith('image/')) {
+          // Accept the file if it is an image
+          callback(null, true);
+        } else {
+          // Reject the file if it is not an image
+          callback(new BadRequestException('Only image files are allowed!'), false);
+        }
+      },
     }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return file.path;
+    if (!file) {
+      throw new BadRequestException('No file uploaded or file is not an image');
+    }
+    return { path: file.path };
   }
 }
