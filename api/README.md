@@ -23,8 +23,8 @@ This is the backend API for a digital artist's portfolio. The API provides CRUD 
 
 - Clone the repository:
     ```bash
-    git clone https://github.com/robert-oros/artist-portfolio-app
-    cd artist-portfolio-app/api/
+    git clone https://github.com/robert-oros/digital-artist-portfolio
+    cd digital-artist-portfolio/api/
     ```
 
 - Ensure you have `make` installed on your system. If not, you can still use `npm` commands. To install dependencies:

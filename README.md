@@ -44,7 +44,7 @@ The repository is divided into two main folders:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/robert-oros/artist-portfolio-app
+    git clone https://github.com/robert-oros/digital-artist-portfolio
     ```
 
 2. Navigate to the project directory:
@@ -84,7 +84,7 @@ The backend API provides the following endpoints for managing portfolio items:
 - `DELETE /api/portfolio/:id`: Delete a portfolio item
 
 File Upload
-- `POST /upload`: Upload an image file
+- `POST /api/upload`: Upload an image file associated with a portfolio item. This endpoint expects a `multipart/form-data` request with the image file.
 
 For detailed information on request/response formats and usage examples, please refer to the API Documentation in the API folder.
 
