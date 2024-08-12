@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert, Switch, FormControlLabel, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LaunchIcon from '@mui/icons-material/Launch';
-import EditIcon from '@mui/icons-material/Edit';
+import React, { useState } from 'react';
+import { Button, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Alert, Switch, FormControlLabel } from '@mui/material';
+import ItemListView from './ItemListView';
+import ItemGridView from './ItemGridView'
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -115,133 +114,11 @@ const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
   };
 
   const renderGridView = () => (
-    <Card 
-      elevation={3}  
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 4,
-        overflow: 'hidden',
-        transition: 'all 0.3s ease-in-out',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  
-        },
-        opacity: item.isVisible ? 1 : 0.6,
-      }}>
-      <CardMedia
-        component="img"
-        height="260"
-        image={item.imageUrl}
-        alt={item.title}
-        sx={{
-          objectFit: 'cover',
-        }}
-      />
-      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box>
-          <Typography gutterBottom variant="h5" component="div" fontWeight="bold">
-            {item.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: '3em' }}>
-            {item.description}
-          </Typography>
-        </Box>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-          <Tooltip title="Visit Site" TransitionComponent={Zoom} arrow>
-            <IconButton 
-              color="primary"
-              href={item.clientWebsiteUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'primary.light',
-                },
-              }}>
-              <LaunchIcon />
-            </IconButton>
-          </Tooltip>
-          <Box>
-            <Tooltip title="Edit" TransitionComponent={Zoom} arrow>
-              <IconButton
-                color="primary"
-                onClick={handleClickOpen}
-                sx={{
-                  mr: 1,
-                  '&:hover': {
-                    backgroundColor: 'primary.light',
-                  },
-                }}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete" TransitionComponent={Zoom} arrow>
-              <IconButton
-                color="error"
-                onClick={() => handleDelete(item.id)}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'error.light',
-                  },
-                }}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
+    <ItemGridView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
   );
 
   const renderListView = () => (
-    <ListItem
-      sx={{
-        borderBottom: '1px solid #eee',
-        opacity: item.isVisible ? 1 : 0.6,
-        flexWrap: 'wrap',
-        py: 2,
-      }}>
-      <Box sx={{ display: 'flex', width: '100%', mb: { xs: 2, sm: 0 } }}>
-        <Box sx={{ flexShrink: 0, mr: 2, width: 100, height: 100 }}>
-          <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="h6" component="div" noWrap>
-            {item.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {item.description}
-          </Typography>
-        </Box>
-      </Box>
-      <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', mt: { xs: 2, sm: 0 } }}>
-        <Button
-          variant="outlined"
-          size="small"
-          startIcon={<LaunchIcon />}
-          href={item.clientWebsiteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ mr: 1 }}>
-          Visit Site
-        </Button>
-        <Box>
-          <Tooltip title="Edit" TransitionComponent={Zoom} arrow>
-            <IconButton color="primary" onClick={handleClickOpen} size="small">
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete" TransitionComponent={Zoom} arrow>
-            <IconButton color="error" onClick={() => handleDelete(item.id)} size="small">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-    </ListItem>
+    <ItemListView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
   );
 
   return (
