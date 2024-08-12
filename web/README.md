@@ -39,6 +39,8 @@ The web application is structured as follows:
 src/
 ├── components/
 │   ├── Footer.js
+│   ├── ItemGridView.js
+│   ├── ItemListView.js
 |   ├── Header.js
 │   ├── PortfolioItem.js
 │   └── PortfolioList.js
