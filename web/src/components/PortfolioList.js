@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, Tooltip, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom, Switch, FormControlLabel } from '@mui/material';
+import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, Tooltip, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom, Switch, FormControlLabel, List, ListItem } from '@mui/material';
 import axios from 'axios';
 import PortfolioItem from './PortfolioItem';
 import AddIcon from '@mui/icons-material/Add';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -23,6 +25,8 @@ const PortfolioList = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageError, setImageError] = useState(null);
+  const [showHidden, setShowHidden] = useState(false);
+  const [viewMode, setViewMode] = useState('grid');
 
   useEffect(() => {
     fetchItems();
@@ -135,6 +139,16 @@ const PortfolioList = () => {
     }
   };
 
+  const toggleShowHidden = () => {
+    setShowHidden(!showHidden);
+  };
+
+  const toggleViewMode = () => {
+    setViewMode(prevMode => prevMode === 'grid' ? 'list' : 'grid');
+  };
+
+  const filteredItems = showHidden ? items : items.filter(item => item.isVisible);
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
@@ -149,20 +163,52 @@ const PortfolioList = () => {
 
   return (
     <Box sx={{ py: 6, px: 2, position: 'relative' }}>
-      {items.length === 0 ? (
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h4" component="h1">Portfolio Items</Typography>
+        <Box>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showHidden}
+                onChange={toggleShowHidden}
+                name="showHidden"
+                color="primary"
+              />
+            }
+            label="Show Hidden Items"
+          />
+          <Tooltip title={viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}>
+            <Button onClick={toggleViewMode} startIcon={viewMode === 'grid' ? <ViewListIcon /> : <ViewModuleIcon />}>
+              {viewMode === 'grid' ? 'List' : 'Grid'}
+            </Button>
+          </Tooltip>
+        </Box>
+      </Box>
+
+      {filteredItems.length === 0 ? (
         <Typography variant="h5" textAlign="center" color="text.secondary" mt={4}>
           No portfolio items found. Start by adding a new item!
         </Typography>
-      ) : (
+      ) : viewMode === 'grid' ? (
         <Grid container spacing={4}>
-          {items.map((item, index) => (
+          {filteredItems.map((item, index) => (
             <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
               <Grid item xs={12} sm={6} md={4}>
-                <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} />
+                <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} viewMode={viewMode} />
               </Grid>
             </Fade>
           ))}
         </Grid>
+      ) : (
+        <List>
+          {filteredItems.map((item, index) => (
+            <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
+              <ListItem>
+                <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} viewMode={viewMode} />
+              </ListItem>
+            </Fade>
+          ))}
+        </List>
       )}
 
       <Zoom in={true}>
@@ -261,3 +307,4 @@ const PortfolioList = () => {
 };
 
 export default PortfolioList;
+

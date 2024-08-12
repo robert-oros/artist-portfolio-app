@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert, Switch, FormControlLabel } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert, Switch, FormControlLabel, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LaunchIcon from '@mui/icons-material/Launch';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
 
-const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
+const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
   const [open, setOpen] = useState(false);
   const [editedItem, setEditedItem] = useState({ ...item });
   const [imageFile, setImageFile] = useState(null);
@@ -88,23 +88,23 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
     }
   };
 
-  return (
+  const renderGridView = () => (
     <Card 
-    elevation={3}  
-    sx={{
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      borderRadius: 4,
-      overflow: 'hidden',
-      transition: 'all 0.3s ease-in-out',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  
-      '&:hover': {
-        transform: 'translateY(-8px)',
-        boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  
-      },
-      // opacity: item.isVisible ? 1 : 0.6,
-    }}>
+      elevation={3}  
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 4,
+        overflow: 'hidden',
+        transition: 'all 0.3s ease-in-out',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',  
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  
+        },
+        opacity: item.isVisible ? 1 : 0.6,
+      }}>
       <CardMedia
         component="img"
         height="260"
@@ -167,6 +167,60 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
           </Box>
         </Box>
       </CardContent>
+    </Card>
+  );
+
+  const renderListView = () => (
+    <ListItem
+      sx={{
+        borderBottom: '1px solid #eee',
+        opacity: item.isVisible ? 1 : 0.6,
+        flexWrap: 'wrap',
+        py: 2,
+      }}>
+      <Box sx={{ display: 'flex', width: '100%', mb: { xs: 2, sm: 0 } }}>
+        <Box sx={{ flexShrink: 0, mr: 2, width: 100, height: 100 }}>
+          <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="h6" component="div" noWrap>
+            {item.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {item.description}
+          </Typography>
+        </Box>
+      </Box>
+      <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', mt: { xs: 2, sm: 0 } }}>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<LaunchIcon />}
+          href={item.clientWebsiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ mr: 1 }}>
+          Visit Site
+        </Button>
+        <Box>
+          <Tooltip title="Edit" TransitionComponent={Zoom} arrow>
+            <IconButton color="primary" onClick={handleClickOpen} size="small">
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete" TransitionComponent={Zoom} arrow>
+            <IconButton color="error" onClick={() => handleDelete(item.id)} size="small">
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
+    </ListItem>
+  );
+
+  return (
+    <>
+      {viewMode === 'grid' ? renderGridView() : renderListView()}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>Edit Portfolio Item</DialogTitle>
         <DialogContent sx={{ mt: 2 }}>
@@ -265,7 +319,7 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
           <Button onClick={handleSubmit} variant="contained" color="primary" disabled={imageError !== null}>Save</Button>
         </DialogActions>
       </Dialog>
-    </Card>
+    </>
   );
 };
 
