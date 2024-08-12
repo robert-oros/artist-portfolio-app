@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert, Switch, FormControlLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LaunchIcon from '@mui/icons-material/Launch';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,6 +29,10 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
 
   const handleChange = (e) => {
     setEditedItem({ ...editedItem, [e.target.name]: e.target.value });
+  };
+
+  const handleVisibilityChange = (e) => {
+    setEditedItem({ ...editedItem, isVisible: e.target.checked });
   };
 
   const handleImageFileChange = (e) => {
@@ -99,7 +103,8 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
         transform: 'translateY(-8px)',
         boxShadow: '0 12px 20px rgba(0,0,0,0.15)',  
       },
-      }}>
+      // opacity: item.isVisible ? 1 : 0.6,
+    }}>
       <CardMedia
         component="img"
         height="260"
@@ -242,6 +247,18 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
             sx={{ mb: 2 }}
             disabled={imageFile !== null}
           />
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={editedItem.isVisible}
+                onChange={handleVisibilityChange}
+                name="isVisible"
+                color="primary"
+              />
+            }
+            label="Visible"
+          />
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={handleClose} color="inherit">Cancel</Button>
@@ -253,3 +270,4 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
 };
 
 export default PortfolioItem;
+

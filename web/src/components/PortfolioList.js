@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, Tooltip, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom } from '@mui/material';
+import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, Tooltip, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom, Switch, FormControlLabel } from '@mui/material';
 import axios from 'axios';
 import PortfolioItem from './PortfolioItem';
 import AddIcon from '@mui/icons-material/Add';
@@ -80,7 +80,7 @@ const PortfolioList = () => {
       
       const response = await axios.post(`${API_BASE_URL}/portfolio`, {
         ...newItem,
-        imageUrl: API_BASE_URL + "/" + imagePath.path,
+        imageUrl: imagePath ? API_BASE_URL + "/" + imagePath.path : newItem.imageUrl,
       });
 
       setItems((prevItems) => [...prevItems, response.data]);
@@ -104,6 +104,10 @@ const PortfolioList = () => {
     setNewItem(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleVisibilityChange = (e) => {
+    setNewItem(prev => ({ ...prev, isVisible: e.target.checked }));
+  };
+
   const handleImageFileChange = (e) => {
     const file = e.target.files[0];
     
@@ -119,7 +123,6 @@ const PortfolioList = () => {
       setNewItem(prev => ({ ...prev, imageUrl: '' }));
       setImageError(null);
       
-      // Create a preview of the selected image
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -235,6 +238,18 @@ const PortfolioList = () => {
             sx={{ mb: 2 }}
             disabled={imageFile !== null}
           />
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={newItem.isVisible}
+                onChange={handleVisibilityChange}
+                name="isVisible"
+                color="primary"
+              />
+            }
+            label="Visible"
+          />
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={resetForm} color="inherit">Cancel</Button>
@@ -246,4 +261,3 @@ const PortfolioList = () => {
 };
 
 export default PortfolioList;
-
