@@ -1,29 +1,87 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LaunchIcon from '@mui/icons-material/Launch';
 import EditIcon from '@mui/icons-material/Edit';
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:3000';
 
 const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
   const [open, setOpen] = useState(false);
   const [editedItem, setEditedItem] = useState({ ...item });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageError, setImageError] = useState(null);
 
   const handleClickOpen = () => {
     setOpen(true);
+    setImagePreview(item.imageUrl);
   };
 
   const handleClose = () => {
     setOpen(false);
     setEditedItem({ ...item });
+    setImageFile(null);
+    setImagePreview(item.imageUrl);
+    setImageError(null);
   };
 
   const handleChange = (e) => {
     setEditedItem({ ...editedItem, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
-    handleEdit(editedItem);
-    setOpen(false);
+  const handleImageFileChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setImageError('Please upload an image file.');
+        setImageFile(null);
+        setImagePreview(null);
+        return;
+      }
+
+      setImageFile(file);
+      setEditedItem(prev => ({ ...prev, imageUrl: '' }));
+      setImageError(null);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+      setImageError(null);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      let imagePath = editedItem.imageUrl;
+      
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        const uploadResponse = await axios.post(`${API_BASE_URL}/upload`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        imagePath = API_BASE_URL + "/" + uploadResponse.data.path;
+      }
+      
+      const updatedItem = {
+        ...editedItem,
+        imageUrl: imagePath,
+      };
+
+      handleEdit(updatedItem);
+      setOpen(false);
+    } catch (err) {
+      console.error('Error updating portfolio item:', err);
+      setImageError('Unable to update portfolio item. Please try again later.');
+    }
   };
 
   return (
@@ -134,6 +192,46 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
           />
           <TextField
             margin="dense"
+            name="clientWebsiteUrl"
+            label="Client Website URL"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={editedItem.clientWebsiteUrl}
+            onChange={handleChange}
+            sx={{ mb: 2 }}
+          />
+
+          <input
+            accept="image/*"
+            style={{ display: 'none' }}
+            id="edit-upload-image-file"
+            type="file"
+            onChange={handleImageFileChange}
+          />
+          <label htmlFor="edit-upload-image-file">
+            <Button
+              variant="contained"
+              component="span"
+              sx={{ mb: 2 }}
+              disabled={editedItem.imageUrl !== '' && !imageFile}>
+              Upload New Image
+            </Button>
+          </label>
+
+          {imageError && (
+            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
+          )}
+
+          {imagePreview && (
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <Typography variant="subtitle1" gutterBottom>Image Preview:</Typography>
+              <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+            </Box>
+          )}
+
+          <TextField
+            margin="dense"
             name="imageUrl"
             label="Image URL"
             type="text"
@@ -142,21 +240,12 @@ const PortfolioItem = ({ item, handleDelete, handleEdit }) => {
             value={editedItem.imageUrl}
             onChange={handleChange}
             sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="clientWebsiteUrl"
-            label="Client Website URL"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={editedItem.clientWebsiteUrl}
-            onChange={handleChange}
+            disabled={imageFile !== null}
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={handleClose} color="inherit">Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">Save</Button>
+          <Button onClick={handleSubmit} variant="contained" color="primary" disabled={imageError !== null}>Save</Button>
         </DialogActions>
       </Dialog>
     </Card>

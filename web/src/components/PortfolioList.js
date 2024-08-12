@@ -21,6 +21,8 @@ const PortfolioList = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [newItem, setNewItem] = useState(initialItemState);
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageError, setImageError] = useState(null);
 
   useEffect(() => {
     fetchItems();
@@ -76,7 +78,6 @@ const PortfolioList = () => {
         imagePath = uploadResponse.data;
       }
       
-      console.log(API_BASE_URL+imagePath)
       const response = await axios.post(`${API_BASE_URL}/portfolio`, {
         ...newItem,
         imageUrl: API_BASE_URL + "/" + imagePath.path,
@@ -92,8 +93,10 @@ const PortfolioList = () => {
   const resetForm = () => {
     setNewItem(initialItemState);
     setImageFile(null);
+    setImagePreview(null);
     setOpenAddDialog(false);
     setError(null);
+    setImageError(null);
   };
 
   const handleInputChange = (e) => {
@@ -102,8 +105,31 @@ const PortfolioList = () => {
   };
 
   const handleImageFileChange = (e) => {
-    setImageFile(e.target.files[0]);
-    setNewItem(prev => ({ ...prev, imageUrl: '' }));
+    const file = e.target.files[0];
+    
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setImageError('Please upload an image file.');
+        setImageFile(null);
+        setImagePreview(null);
+        return;
+      }
+
+      setImageFile(file);
+      setNewItem(prev => ({ ...prev, imageUrl: '' }));
+      setImageError(null);
+      
+      // Create a preview of the selected image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+      setImageError(null);
+    }
   };
 
   if (loading) {
@@ -181,11 +207,21 @@ const PortfolioList = () => {
               variant="contained"
               component="span"
               sx={{ mb: 2 }}
-              disabled={newItem.imageUrl !== ''}
-            >
+              disabled={newItem.imageUrl !== ''}>
               Upload Image
             </Button>
           </label>
+
+          {imageError && (
+            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
+          )}
+
+          {imagePreview && (
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <Typography variant="subtitle1" gutterBottom>Image Preview:</Typography>
+              <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+            </Box>
+          )}
 
           <TextField
             margin="dense"
@@ -202,7 +238,7 @@ const PortfolioList = () => {
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={resetForm} color="inherit">Cancel</Button>
-          <Button onClick={handleAddItem} variant="contained" color="primary">Add</Button>
+          <Button onClick={handleAddItem} variant="contained" color="primary" disabled={imageError !== null}>Add</Button>
         </DialogActions>
       </Dialog>
     </Box>
