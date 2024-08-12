@@ -48,10 +48,13 @@ src/
 
 ### Components
 
-1. `Header.js`: Renders the application header.
-2. `PortfolioList.js`: Displays the list of portfolio items and manages the overall portfolio view.
-3. `PortfolioItem.js`: Renders individual portfolio items and handles item-specific actions.
-4. `Footer.js`: Renders the application footer.
+- `index.js`: The entry point of the React application.
+- `App.js`: The main component that sets up the application structure.
+- `components/Header.js`: Renders the application header.
+- `components/Footer.js`: Renders the application footer.
+- `components/PortfolioList.js`: Manages the overall portfolio view, including grid/list display modes and adding new items.
+- `components/PortfolioItem.js`: Handles individual portfolio item display and editing.
+
 
 ## Technology Stack
 - Framework: React

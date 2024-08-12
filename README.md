@@ -91,8 +91,13 @@ For detailed information on request/response formats and usage examples, please 
 ## Web Application
 The web application is built with React and provides a user-friendly interface for managing the portfolio. Key components include:
 
-- `PortfolioList.js`: Manages the overall portfolio view, including grid/list display modes and adding new items.
-- `PortfolioItem.js`: Handles individual portfolio item display and editing.
+- `index.js`: The entry point of the React application.
+- `App.js`: The main component that sets up the application structure.
+- `components/Header.js`: Renders the application header.
+- `components/Footer.js`: Renders the application footer.
+- `components/PortfolioList.js`: Manages the overall portfolio view, including grid/list display modes and adding new items.
+- `components/PortfolioItem.js`: Handles individual portfolio item display and editing.
+
 
 Features:
 - Responsive design for various screen sizes
