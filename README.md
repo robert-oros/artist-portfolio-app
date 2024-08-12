@@ -11,18 +11,23 @@ This is a web application for managing a digital artist's portfolio. The web app
    - [Installation](#installation)
    - [Running the Application](#running-the-application)
 - [API Overview](#api-overview)
+- [Web Application](#web-application)
 
 ## Features
 1. Portfolio Item Management
     - Create, read, update, and delete portfolio items
     - Each item includes: title, description, image URL, client website URL, and visibility status
-
 2. File Upload
     - Support for image uploads
+3. Portfolio Display
+    - Grid and list view modes for portfolio items
+    - Toggle visibility of portfolio items
+    - Preview images before saving
 
 ## Technologies Used
-- Frontend: React
+- Frontend: React, Material-UI (MUI)
 - Backend: NestJS, TypeORM, SQLite
+- HTTP Client: Axios
 
 ## Project Structure
 The repository is divided into two main folders:
@@ -82,3 +87,16 @@ File Upload
 - `POST /upload`: Upload an image file
 
 For detailed information on request/response formats and usage examples, please refer to the API Documentation in the API folder.
+
+## Web Application
+The web application is built with React and provides a user-friendly interface for managing the portfolio. Key components include:
+
+- `PortfolioList.js`: Manages the overall portfolio view, including grid/list display modes and adding new items.
+- `PortfolioItem.js`: Handles individual portfolio item display and editing.
+
+Features:
+- Responsive design for various screen sizes
+- Image preview before saving
+- Toggle between grid and list view modes
+
+For more details on the web application structure and setup, refer to the README in the `web` folder.

@@ -9,10 +9,10 @@ This is the frontend web application for managing a digital artist's portfolio.
 - [Application Structure](#application-structure)
    - [Components](#components)
 - [Technology Stack](#technology-stack)
+- [Features](#features)
 - [Development](#development)
    - [Running the Development Server](#running-the-development-server)
    - [Building for Production](#building-for-production)
-<!-- - [Testing](#testing) -->
 
 ## Getting Started
 ### Prerequisites
@@ -49,14 +49,23 @@ src/
 ### Components
 
 1. `Header.js`: Renders the application header.
-2. `PortfolioList.js`: Displays the list of portfolio items.
-3. `PortfolioForm.js`: Provides a form for creating and editing portfolio items.
+2. `PortfolioList.js`: Displays the list of portfolio items and manages the overall portfolio view.
+3. `PortfolioItem.js`: Renders individual portfolio items and handles item-specific actions.
+4. `Footer.js`: Renders the application footer.
 
 ## Technology Stack
 - Framework: React
-- UI Library: Material-UI
-- Routing: React Router
+- UI Library: Material-UI (MUI)
 - HTTP Client: Axios
+- Icons: Material Icons
+
+## Features
+- Grid and list view modes for portfolio items
+- Add, edit, and delete portfolio items
+- Upload images or use image URLs for portfolio items
+- Toggle visibility of portfolio items
+- Preview images before saving
+- Responsive design for various screen sizes
 
 ## Development
 ### Running the Development Server
