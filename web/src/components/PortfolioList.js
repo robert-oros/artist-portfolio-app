@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Alert, Box, CircularProgress, Button, Dialog, DialogActions, Tooltip, DialogContent, DialogTitle, TextField, Fade, Fab, Zoom, Switch, FormControlLabel, List, ListItem } from '@mui/material';
+import {
+  Grid,
+  Typography,
+  Alert,
+  Box,
+  CircularProgress,
+  Button,
+  Dialog,
+  DialogActions,
+  Tooltip,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Fade,
+  Fab,
+  Zoom,
+  Switch,
+  FormControlLabel,
+  List,
+  ListItem
+} from '@mui/material';
 import axios from 'axios';
 import PortfolioItem from './PortfolioItem';
 import AddIcon from '@mui/icons-material/Add';
@@ -52,7 +72,7 @@ const PortfolioList = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/portfolio/${id}`);
-      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+      setItems(prevItems => prevItems.filter(item => item.id !== id));
       setError(null);
     } catch (err) {
       handleError(err, 'Unable to delete portfolio item. Please try again later.');
@@ -62,7 +82,7 @@ const PortfolioList = () => {
   const handleEdit = async (editedItem) => {
     try {
       const response = await axios.patch(`${API_BASE_URL}/portfolio/${editedItem.id}`, editedItem);
-      setItems((prevItems) => prevItems.map((item) => item.id === editedItem.id ? response.data : item));
+      setItems(prevItems => prevItems.map(item => item.id === editedItem.id ? response.data : item));
       setError(null);
     } catch (err) {
       handleError(err, 'Unable to update portfolio item. Please try again later.');
@@ -79,15 +99,15 @@ const PortfolioList = () => {
         const uploadResponse = await axios.post(`${API_BASE_URL}/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        imagePath = uploadResponse.data;
+        imagePath = uploadResponse.data.path;
       }
       
       const response = await axios.post(`${API_BASE_URL}/portfolio`, {
         ...newItem,
-        imageUrl: imagePath ? API_BASE_URL + "/" + imagePath.path : newItem.imageUrl,
+        imageUrl: imagePath ? API_BASE_URL + "/" + imagePath : newItem.imageUrl,
       });
 
-      setItems((prevItems) => [...prevItems, response.data]);
+      setItems(prevItems => [...prevItems, response.data]);
       resetForm();
     } catch (err) {
       handleError(err, 'Unable to add portfolio item. Please try again later.');
@@ -103,9 +123,34 @@ const PortfolioList = () => {
     setImageError(null);
   };
 
-  const handleInputChange = (e) => {
+  const validateImageUrl = (url) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => resolve(url);
+      img.onerror = () => reject('Invalid image URL. Please check the link.');
+    });
+  };
+
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
     setNewItem(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'imageUrl') {
+      if (value) {
+        try {
+          await validateImageUrl(value);
+          setImagePreview(value);
+          setImageError(null);
+        } catch (error) {
+          setImagePreview(null);
+          setImageError(error);
+        }
+      } else {
+        setImagePreview(null);
+        setImageError(null);
+      }
+    }
   };
 
   const handleVisibilityChange = (e) => {
@@ -140,11 +185,11 @@ const PortfolioList = () => {
   };
 
   const toggleShowHidden = () => {
-    setShowHidden(!showHidden);
+    setShowHidden(prev => !prev);
   };
 
   const toggleViewMode = () => {
-    setViewMode(prevMode => prevMode === 'grid' ? 'list' : 'grid');
+    setViewMode(prevMode => (prevMode === 'grid' ? 'list' : 'grid'));
   };
 
   const filteredItems = showHidden ? items : items.filter(item => item.isVisible);
@@ -307,4 +352,3 @@ const PortfolioList = () => {
 };
 
 export default PortfolioList;
-

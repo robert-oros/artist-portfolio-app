@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, CardContent, CardMedia, Typography, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Zoom, Alert, Switch, FormControlLabel, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -27,8 +27,34 @@ const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
     setImageError(null);
   };
 
-  const handleChange = (e) => {
-    setEditedItem({ ...editedItem, [e.target.name]: e.target.value });
+  const validateImageUrl = (url) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => resolve(url);
+      img.onerror = () => reject('Invalid image URL. Please check the link.');
+    });
+  };
+
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+    setEditedItem({ ...editedItem, [name]: value });
+
+    if (name === 'imageUrl') {
+      if (value) {
+        try {
+          await validateImageUrl(value);
+          setImagePreview(value);
+          setImageError(null);
+        } catch (error) {
+          setImagePreview(null);
+          setImageError(error);
+        }
+      } else {
+        setImagePreview(null);
+        setImageError(null);
+      }
+    }
   };
 
   const handleVisibilityChange = (e) => {
