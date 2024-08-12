@@ -1,24 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid,
-  Typography,
-  Alert,
-  Box,
-  CircularProgress,
-  Button,
-  Dialog,
-  DialogActions,
-  Tooltip,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Fade,
-  Fab,
-  Zoom,
-  Switch,
-  FormControlLabel,
-  List,
-  ListItem
+  Grid, Typography, Alert, Box, CircularProgress, Button, Dialog,
+  DialogActions, Tooltip, DialogContent, DialogTitle, TextField,
+  Fade, Fab, Zoom, Switch, FormControlLabel, List, ListItem
 } from '@mui/material';
 import axios from 'axios';
 import PortfolioItem from './PortfolioItem';
@@ -184,14 +168,8 @@ const PortfolioList = () => {
     }
   };
 
-  const toggleShowHidden = () => {
-    setShowHidden(prev => !prev);
-  };
-
-  const toggleViewMode = () => {
-    setViewMode(prevMode => (prevMode === 'grid' ? 'list' : 'grid'));
-  };
-
+  const toggleShowHidden = () => setShowHidden(prev => !prev);
+  const toggleViewMode = () => setViewMode(prevMode => (prevMode === 'grid' ? 'list' : 'grid'));
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreview(null);
@@ -200,68 +178,172 @@ const PortfolioList = () => {
 
   const filteredItems = showHidden ? items : items.filter(item => item.isVisible);
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-        <CircularProgress size={60} thickness={4} />
-      </Box>
-    );
-  }
+  const LoadingView = () => (
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <CircularProgress size={60} thickness={4} />
+    </Box>
+  );
 
-  if (error) {
-    return <Alert severity="error" variant="filled" sx={{ mt: 2 }}>{error}</Alert>;
-  }
+  const ErrorView = () => (
+    <Alert severity="error" variant="filled" sx={{ mt: 2 }}>{error}</Alert>
+  );
+
+  const PortfolioHeader = () => (
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <Typography variant="h4" component="h1">Portfolio Items</Typography>
+      <Box>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showHidden}
+              onChange={toggleShowHidden}
+              name="showHidden"
+              color="primary"
+            />
+          }
+          label="Show Hidden Items"
+        />
+        <Tooltip title={viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}>
+          <Button onClick={toggleViewMode} startIcon={viewMode === 'grid' ? <ViewListIcon /> : <ViewModuleIcon />}>
+            {viewMode === 'grid' ? 'List' : 'Grid'}
+          </Button>
+        </Tooltip>
+      </Box>
+    </Box>
+  );
+
+  const EmptyPortfolioView = () => (
+    <Typography variant="h5" textAlign="center" color="text.secondary" mt={4}>
+      No portfolio items found. Start by adding a new item!
+    </Typography>
+  );
+
+  const PortfolioGrid = () => (
+    <Grid container spacing={4}>
+      {filteredItems.map((item, index) => (
+        <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
+          <Grid item xs={12} sm={6} md={4}>
+            <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} viewMode={viewMode} />
+          </Grid>
+        </Fade>
+      ))}
+    </Grid>
+  );
+
+  const PortfolioList = () => (
+    <List>
+      {filteredItems.map((item, index) => (
+        <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
+          <ListItem>
+            <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} viewMode={viewMode} />
+          </ListItem>
+        </Fade>
+      ))}
+    </List>
+  );
+
+  const AddItemDialog = () => (
+    <Dialog open={openAddDialog} onClose={resetForm} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>Add New Portfolio Item</DialogTitle>
+      <DialogContent sx={{ mt: 2 }}>
+        {['title', 'description', 'clientWebsiteUrl'].map((field) => (
+          <TextField
+            key={field}
+            margin="dense"
+            name={field}
+            label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1').trim()}
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newItem[field]}
+            onChange={handleInputChange}
+            multiline={field === 'description'}
+            rows={field === 'description' ? 4 : 1}
+            sx={{ mb: 2 }}
+          />
+        ))}
+
+        <input
+          accept="image/*"
+          style={{ display: 'none' }}
+          id="upload-image-file"
+          type="file"
+          onChange={handleImageFileChange}
+        />
+        <label htmlFor="upload-image-file">
+          <Button
+            variant="contained"
+            component="span"
+            sx={{ mb: 2 }}
+            disabled={newItem.imageUrl !== ''}>
+            Upload Image
+          </Button>
+        </label>
+        {(imagePreview || newItem.imageUrl) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleRemoveImage}
+            sx={{ mb: 2, ml: 2 }}
+          >
+            Remove Image
+          </Button>
+        )}
+        
+        {imageError && (
+          <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
+        )}
+
+        {imagePreview && (
+          <Box sx={{ mt: 2, mb: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>Image Preview:</Typography>
+            <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+          </Box>
+        )}
+
+        <TextField
+          margin="dense"
+          name="imageUrl"
+          label="Image URL"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={newItem.imageUrl}
+          onChange={handleInputChange}
+          sx={{ mb: 2 }}
+          disabled={imageFile !== null}
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={newItem.isVisible}
+              onChange={handleVisibilityChange}
+              name="isVisible"
+              color="primary"
+            />
+          }
+          label="Visible"
+        />
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={resetForm} color="inherit">Cancel</Button>
+        <Button onClick={handleAddItem} variant="contained" color="primary" disabled={imageError !== null}>Add</Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  if (loading) return <LoadingView />;
+  if (error) return <ErrorView />;
 
   return (
     <Box sx={{ py: 6, px: 2, position: 'relative' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Typography variant="h4" component="h1">Portfolio Items</Typography>
-        <Box>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={showHidden}
-                onChange={toggleShowHidden}
-                name="showHidden"
-                color="primary"
-              />
-            }
-            label="Show Hidden Items"
-          />
-          <Tooltip title={viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}>
-            <Button onClick={toggleViewMode} startIcon={viewMode === 'grid' ? <ViewListIcon /> : <ViewModuleIcon />}>
-              {viewMode === 'grid' ? 'List' : 'Grid'}
-            </Button>
-          </Tooltip>
-        </Box>
-      </Box>
-
+      <PortfolioHeader />
       {filteredItems.length === 0 ? (
-        <Typography variant="h5" textAlign="center" color="text.secondary" mt={4}>
-          No portfolio items found. Start by adding a new item!
-        </Typography>
-      ) : viewMode === 'grid' ? (
-        <Grid container spacing={4}>
-          {filteredItems.map((item, index) => (
-            <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
-              <Grid item xs={12} sm={6} md={4}>
-                <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} viewMode={viewMode} />
-              </Grid>
-            </Fade>
-          ))}
-        </Grid>
+        <EmptyPortfolioView />
       ) : (
-        <List>
-          {filteredItems.map((item, index) => (
-            <Fade in={true} timeout={500 * (index + 1)} key={item.id}>
-              <ListItem>
-                <PortfolioItem item={item} handleDelete={handleDelete} handleEdit={handleEdit} viewMode={viewMode} />
-              </ListItem>
-            </Fade>
-          ))}
-        </List>
+        viewMode === 'grid' ? <PortfolioGrid /> : <PortfolioList />
       )}
-
       <Zoom in={true}>
         <Tooltip title="Add Item" arrow>
           <Fab
@@ -274,97 +356,10 @@ const PortfolioList = () => {
           </Fab>
         </Tooltip>
       </Zoom>
-
-      <Dialog open={openAddDialog} onClose={resetForm} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>Add New Portfolio Item</DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
-          {['title', 'description', 'clientWebsiteUrl'].map((field) => (
-            <TextField
-              key={field}
-              margin="dense"
-              name={field}
-              label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1').trim()}
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={newItem[field]}
-              onChange={handleInputChange}
-              multiline={field === 'description'}
-              rows={field === 'description' ? 4 : 1}
-              sx={{ mb: 2 }}
-            />
-          ))}
-
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="upload-image-file"
-            type="file"
-            onChange={handleImageFileChange}
-          />
-          <label htmlFor="upload-image-file">
-            <Button
-              variant="contained"
-              component="span"
-              sx={{ mb: 2 }}
-              disabled={newItem.imageUrl !== ''}>
-              Upload Image
-            </Button>
-          </label>
-          {(imagePreview || newItem.imageUrl) && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleRemoveImage}
-              sx={{ mb: 2, ml: 2 }}
-            >
-              Remove Image
-            </Button>
-          )}
-          
-          {imageError && (
-            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
-          )}
-
-          {imagePreview && (
-            <Box sx={{ mt: 2, mb: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>Image Preview:</Typography>
-              <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
-            </Box>
-          )}
-
-          <TextField
-            margin="dense"
-            name="imageUrl"
-            label="Image URL"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={newItem.imageUrl}
-            onChange={handleInputChange}
-            sx={{ mb: 2 }}
-            disabled={imageFile !== null}
-          />
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={newItem.isVisible}
-                onChange={handleVisibilityChange}
-                name="isVisible"
-                color="primary"
-              />
-            }
-            label="Visible"
-          />
-        </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button onClick={resetForm} color="inherit">Cancel</Button>
-          <Button onClick={handleAddItem} variant="contained" color="primary" disabled={imageError !== null}>Add</Button>
-        </DialogActions>
-      </Dialog>
+      <AddItemDialog />
     </Box>
   );
 };
 
 export default PortfolioList;
+

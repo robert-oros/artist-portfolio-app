@@ -6,6 +6,131 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
 
+const ImageUploader = ({ imageFile, imagePreview, editedItem, handleImageFileChange, handleRemoveImage }) => (
+  <>
+    <input
+      accept="image/*"
+      style={{ display: 'none' }}
+      id="edit-upload-image-file"
+      type="file"
+      onChange={handleImageFileChange}
+    />
+    <label htmlFor="edit-upload-image-file">
+      <Button
+        variant="contained"
+        component="span"
+        sx={{ mb: 2 }}
+        disabled={editedItem.imageUrl !== '' && !imageFile}>
+        Upload New Image
+      </Button>
+    </label>
+    {(imagePreview || editedItem.imageUrl) && (
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={handleRemoveImage}
+        sx={{ mb: 2, ml: 2 }}
+      >
+        Remove Image
+      </Button>
+    )}
+  </>
+);
+
+const ImagePreview = ({ imagePreview }) => (
+  <Box sx={{ mt: 2, mb: 2 }}>
+    <Typography variant="subtitle1" gutterBottom>Image Preview:</Typography>
+    <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+  </Box>
+);
+
+const EditDialog = ({ open, handleClose, editedItem, handleChange, handleVisibilityChange, handleSubmit, imageError, imageFile, imagePreview, handleImageFileChange, handleRemoveImage }) => (
+  <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <DialogTitle sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>Edit Portfolio Item</DialogTitle>
+    <DialogContent sx={{ mt: 2 }}>
+      <TextField
+        autoFocus
+        margin="dense"
+        name="title"
+        label="Title"
+        type="text"
+        fullWidth
+        variant="outlined"
+        value={editedItem.title}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        margin="dense"
+        name="description"
+        label="Description"
+        type="text"
+        fullWidth
+        variant="outlined"
+        multiline
+        rows={4}
+        value={editedItem.description}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        margin="dense"
+        name="clientWebsiteUrl"
+        label="Client Website URL"
+        type="text"
+        fullWidth
+        variant="outlined"
+        value={editedItem.clientWebsiteUrl}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+      />
+
+      <ImageUploader
+        imageFile={imageFile}
+        imagePreview={imagePreview}
+        editedItem={editedItem}
+        handleImageFileChange={handleImageFileChange}
+        handleRemoveImage={handleRemoveImage}
+      />
+      
+      {imageError && (
+        <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
+      )}
+
+      {imagePreview && <ImagePreview imagePreview={imagePreview} />}
+
+      <TextField
+        margin="dense"
+        name="imageUrl"
+        label="Image URL"
+        type="text"
+        fullWidth
+        variant="outlined"
+        value={editedItem.imageUrl}
+        onChange={handleChange}
+        sx={{ mb: 2 }}
+        disabled={imageFile !== null}
+      />
+
+      <FormControlLabel
+        control={
+          <Switch
+            checked={editedItem.isVisible}
+            onChange={handleVisibilityChange}
+            name="isVisible"
+            color="primary"
+          />
+        }
+        label="Visible"
+      />
+    </DialogContent>
+    <DialogActions sx={{ px: 3, py: 2 }}>
+      <Button onClick={handleClose} color="inherit">Cancel</Button>
+      <Button onClick={handleSubmit} variant="contained" color="primary" disabled={imageError !== null}>Save</Button>
+    </DialogActions>
+  </Dialog>
+);
+
 const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
   const [open, setOpen] = useState(false);
   const [editedItem, setEditedItem] = useState({ ...item });
@@ -119,125 +244,25 @@ const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
     setEditedItem(prev => ({ ...prev, imageUrl: '' }));
   };
 
-  const renderGridView = () => (
-    <ItemGridView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
-  );
-
-  const renderListView = () => (
-    <ItemListView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
-  );
-
   return (
     <>
-      {viewMode === 'grid' ? renderGridView() : renderListView()}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>Edit Portfolio Item</DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="title"
-            label="Title"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={editedItem.title}
-            onChange={handleChange}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="description"
-            label="Description"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={4}
-            value={editedItem.description}
-            onChange={handleChange}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="clientWebsiteUrl"
-            label="Client Website URL"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={editedItem.clientWebsiteUrl}
-            onChange={handleChange}
-            sx={{ mb: 2 }}
-          />
-
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="edit-upload-image-file"
-            type="file"
-            onChange={handleImageFileChange}
-          />
-          <label htmlFor="edit-upload-image-file">
-            <Button
-              variant="contained"
-              component="span"
-              sx={{ mb: 2 }}
-              disabled={editedItem.imageUrl !== '' && !imageFile}>
-              Upload New Image
-            </Button>
-          </label>
-          {(imagePreview || editedItem.imageUrl) && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleRemoveImage}
-              sx={{ mb: 2, ml: 2 }}
-            >
-              Remove Image
-            </Button>
-          )}
-          
-          {imageError && (
-            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
-          )}
-
-          {imagePreview && (
-            <Box sx={{ mt: 2, mb: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>Image Preview:</Typography>
-              <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
-            </Box>
-          )}
-
-          <TextField
-            margin="dense"
-            name="imageUrl"
-            label="Image URL"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={editedItem.imageUrl}
-            onChange={handleChange}
-            sx={{ mb: 2 }}
-            disabled={imageFile !== null}
-          />
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={editedItem.isVisible}
-                onChange={handleVisibilityChange}
-                name="isVisible"
-                color="primary"
-              />
-            }
-            label="Visible"
-          />
-        </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button onClick={handleClose} color="inherit">Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary" disabled={imageError !== null}>Save</Button>
-        </DialogActions>
-      </Dialog>
+      {viewMode === 'grid' 
+        ? <ItemGridView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
+        : <ItemListView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
+      }
+      <EditDialog
+        open={open}
+        handleClose={handleClose}
+        editedItem={editedItem}
+        handleChange={handleChange}
+        handleVisibilityChange={handleVisibilityChange}
+        handleSubmit={handleSubmit}
+        imageError={imageError}
+        imageFile={imageFile}
+        imagePreview={imagePreview}
+        handleImageFileChange={handleImageFileChange}
+        handleRemoveImage={handleRemoveImage}
+      />
     </>
   );
 };
