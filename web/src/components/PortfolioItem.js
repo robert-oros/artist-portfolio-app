@@ -113,6 +113,12 @@ const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setEditedItem(prev => ({ ...prev, imageUrl: '' }));
+  };
+
   const renderGridView = () => (
     <ItemGridView item={item} handleClickOpen={handleClickOpen} handleDelete={handleDelete} />
   );
@@ -180,7 +186,17 @@ const PortfolioItem = ({ item, handleDelete, handleEdit, viewMode }) => {
               Upload New Image
             </Button>
           </label>
-
+          {(imagePreview || editedItem.imageUrl) && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleRemoveImage}
+              sx={{ mb: 2, ml: 2 }}
+            >
+              Remove Image
+            </Button>
+          )}
+          
           {imageError && (
             <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
           )}

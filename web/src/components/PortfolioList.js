@@ -192,6 +192,12 @@ const PortfolioList = () => {
     setViewMode(prevMode => (prevMode === 'grid' ? 'list' : 'grid'));
   };
 
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setNewItem(prev => ({ ...prev, imageUrl: '' }));
+  };
+
   const filteredItems = showHidden ? items : items.filter(item => item.isVisible);
 
   if (loading) {
@@ -305,7 +311,17 @@ const PortfolioList = () => {
               Upload Image
             </Button>
           </label>
-
+          {(imagePreview || newItem.imageUrl) && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleRemoveImage}
+              sx={{ mb: 2, ml: 2 }}
+            >
+              Remove Image
+            </Button>
+          )}
+          
           {imageError && (
             <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{imageError}</Alert>
           )}
