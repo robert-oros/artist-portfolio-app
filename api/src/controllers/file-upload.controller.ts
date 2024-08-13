@@ -19,12 +19,9 @@ export class FileUploadController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        // Check the MIME type of the file
         if (file.mimetype.startsWith('image/')) {
-          // Accept the file if it is an image
           callback(null, true);
         } else {
-          // Reject the file if it is not an image
           callback(new BadRequestException('Only image files are allowed!'), false);
         }
       },
