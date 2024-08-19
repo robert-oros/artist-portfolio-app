@@ -1,4 +1,3 @@
-// src/services/portfolio.service.ts
 import { Injectable } from '@nestjs/common';
 import { PortfolioItem } from '../entities/portfolio-item.entity';
 import { PortfolioItemRepository } from '../repositories/portfolio-item.repository';

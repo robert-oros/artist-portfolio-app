@@ -1,4 +1,3 @@
-// src/controllers/portfolio.controller.ts
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { PortfolioItem } from '../entities/portfolio-item.entity';
 import { PortfolioService } from '../services/portfolio.service';
